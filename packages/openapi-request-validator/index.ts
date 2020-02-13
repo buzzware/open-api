@@ -26,6 +26,7 @@ export interface OpenAPIRequestValidatorArgs {
     openAPIResponseValidatorValidationError: OpenAPIRequestValidatorError,
     ajvError: Ajv.ErrorObject
   ): any;
+  ajvOptions?: Object
 }
 
 export interface OpenAPIRequestValidatorError {
@@ -91,14 +92,17 @@ export default class OpenAPIRequestValidator
       }
     }
 
-    const v = new Ajv({
+    // @ts-ignore
+    let ajvo = Object.assign({
       useDefaults: true,
       allErrors: true,
       unknownFormats: 'ignore',
       missingRefs: 'fail',
       // @ts-ignore TODO get Ajv updated to account for logger
       logger: false
-    });
+    },args.ajvOptions);
+
+    const v = new Ajv(ajvo);
 
     v.removeKeyword('readOnly');
     v.addKeyword('readOnly', {
